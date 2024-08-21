@@ -2,8 +2,13 @@ import { Request, Response, Router } from 'express';
 import { z } from 'zod';
 import { Account, User } from '../models/db';
 import jwt from 'jsonwebtoken'
+import authMiddleware from './middleware';
 
 const userRouter = Router();
+
+interface AuthenticatedRequest extends Request{
+    userId?: string
+}
 
 const signupBody = z.object({
     username: z.string().email(),
@@ -15,6 +20,12 @@ const signupBody = z.object({
 const signinBody = z.object({
     username: z.string().email(),
     password: z.string().min(6),
+})
+
+const updateBody = z.object({
+    password: z.string().optional(),
+    firstName: z.string().optional(),
+    lastName:z.string().optional(),
 })
 
 userRouter.post('/signup', async(req: Request, res: Response) => {
@@ -83,6 +94,23 @@ userRouter.post('/signin', async (req: Request, res: Response)=> {
     return res.status(200).json({
             message: "Sign-in successful",
             token
+    })
+})
+
+userRouter.put('/', authMiddleware, async (req: AuthenticatedRequest, res) => {
+    const parseResult = updateBody.safeParse(req.body);
+
+    if (!parseResult.success){
+        return res.status(422).json({
+            message: "Validation failed",
+            errors: parseResult.error.errors
+    })
+}
+    const updateData = parseResult.data;
+    await User.updateOne({ _id: req.userId }, { $set: updateData });
+
+    res.json({
+        message: "updated successfully"
     })
 })
 
