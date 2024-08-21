@@ -9,6 +9,11 @@ const userRouter = Router();
 interface AuthenticatedRequest extends Request{
     userId?: string
 }
+interface UserQueryParams extends Request {
+    query: {
+        filter?: string;
+    };
+}
 
 const signupBody = z.object({
     username: z.string().email(),
@@ -62,6 +67,7 @@ userRouter.post('/signup', async(req: Request, res: Response) => {
 
     res.status(201).json({
         message: "User created successfully",
+        userId,
     })
 
 })
@@ -93,7 +99,8 @@ userRouter.post('/signin', async (req: Request, res: Response)=> {
 
     return res.status(200).json({
             message: "Sign-in successful",
-            token
+            token,
+            userId: user._id
     })
 })
 
@@ -113,5 +120,39 @@ userRouter.put('/', authMiddleware, async (req: AuthenticatedRequest, res) => {
         message: "updated successfully"
     })
 })
+
+userRouter.get("/bulk", async (req: UserQueryParams, res: Response) => {
+    const filter = req.query.filter || "";
+
+    try {
+        const users = await User.find({
+            $or: [{
+                firstName: {
+                    "$regex": filter,
+                    "$options": "i" // Option for case-insensitive matching
+                }
+            }, {
+                lastName: {
+                    "$regex": filter,
+                    "$options": "i" // Option for case-insensitive matching
+                }
+            }]
+        }).exec();
+
+        res.json({
+            user: users.map(user => ({
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                _id: user._id
+            }))
+        });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({
+            message: 'Internal Server Error',
+        });
+    }
+});
 
 export default userRouter;
