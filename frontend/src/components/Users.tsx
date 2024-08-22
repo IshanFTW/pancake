@@ -18,14 +18,14 @@ export const Users = () => {
     useEffect(() => {
         const fetchUserId = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/api/v1/user/profile", {
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/profile`, {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
                 });
                 const userId = response.data._id;
 
-                const usersResponse = await axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter, {
+                const usersResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/bulk?filter=` + filter, {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }

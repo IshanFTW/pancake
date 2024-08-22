@@ -17,7 +17,7 @@ const Signup = () => {
 
     const handleSignup = async () => {
         try {
-            const response = await axios.post("http://localhost:3000/api/v1/user/signup", {
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/signup`, {
                 username,
                 firstName,
                 lastName,
