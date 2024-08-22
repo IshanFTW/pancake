@@ -6,7 +6,6 @@ A full-stack web application that allows users to sign up, sign in, view their d
 * Dashboard displaying user details and available balance
 * Ability to send money to other users
 * Real-time validation for insufficient balance during money transfer
-* Responsive design
 ## Tech Stack
 ### Frontend:
 * React with TypeScript
@@ -17,6 +16,7 @@ A full-stack web application that allows users to sign up, sign in, view their d
 * Node.js with Express
 * MongoDB with Mongoose for database management
 * JWT for authentication
+* Zod for form validation
 
 ## Installation
 ### Prerequisites:
