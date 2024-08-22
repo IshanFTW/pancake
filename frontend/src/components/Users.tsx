@@ -13,7 +13,7 @@ interface User {
 export const Users = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [filter, setFilter] = useState<string>("");
-    const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true); 
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -23,25 +23,28 @@ export const Users = () => {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
                 });
-                setLoggedInUserId(response.data._id);
+                const userId = response.data._id;
+
+                const usersResponse = await axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter, {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                });
+                const filteredUsers = usersResponse.data.user.filter((user: User) => user._id !== userId);
+                setUsers(filteredUsers);
             } catch (error) {
                 console.error("Failed to fetch logged-in user ID:", error);
+            }finally {
+                setLoading(false);
             }
         };
 
         fetchUserId();
-    }, []);
+    }, [filter]);
 
-    useEffect(() => {
-        axios.get("http://localhost:3000/api/v1/user/bulk?filter=" + filter)
-            .then(response => {
-                const filteredUsers = response.data.user.filter((user: User) => user._id !== loggedInUserId);
-                setUsers(filteredUsers);
-            })
-            .catch(error => {
-                console.error("Failed to fetch users:", error);
-            });
-    }, [filter, loggedInUserId]);
+    if (loading) {
+        return <div>Loading users...</div>;
+    }
 
     return (
         <>

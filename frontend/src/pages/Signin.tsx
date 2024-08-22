@@ -4,7 +4,7 @@ import { InputBox } from '../components/InputBox'
 import { Button } from '../components/Button'
 import { BottomWarning } from '../components/BottomWarning'
 import { useState } from 'react'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { useNavigate } from 'react-router-dom'
 
 const Signin = () => {
@@ -25,8 +25,17 @@ const Signin = () => {
             }else{
                 console.log("Token not returned in response");
             }
-        }catch(error){
-            console.log("SignIn Failed: ", error);
+        }catch (error) {
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError;
+                if (axiosError.response && axiosError.response.status === 401) {
+                    alert('Invalid email or password');
+                } else {
+                    console.log("SignIn Failed: ", axiosError.message);
+                }
+            } else {
+                console.log("Unexpected Error: ", error);
+            }
         }
     }
 
