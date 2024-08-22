@@ -1,6 +1,10 @@
 # Pancake Money Transfer App
 A full-stack web application that allows users to sign up, sign in, view their dashboard, and send money to other users. The frontend is built with React and TypeScript, while the backend is powered by Node.js and Express.
 
+## Demo
+You can view the live demo of the app here: [Pancake](https://pancake-ishan.vercel.app)
+
+
 ## Features
 * User authentication (Sign up, Sign in) 
 * Dashboard displaying user details and available balance
@@ -40,7 +44,6 @@ npm install
 ```
 3. Create a .env file in the backend directory with the following contents:
 ```
-PORT=3000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 ```
