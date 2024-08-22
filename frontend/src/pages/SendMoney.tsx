@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
 
 const SendMoney = () => {
     const [searchParams] = useSearchParams();
@@ -8,13 +9,35 @@ const SendMoney = () => {
     const name = searchParams.get("name");
     const [amount, setAmount] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
+    const [balance, setBalance] = useState<number>(0);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchBalance = async () => {
+            try {
+                const response = await axios.get("http://localhost:3000/api/v1/account/balance", {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                });
+                setBalance(response.data.balance);
+            } catch (error) {
+                console.error("Failed to fetch balance:", error);
+            }
+        };
+
+        fetchBalance();
+    }, []);
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAmount(Number(e.target.value));
     };
 
     const handleTransfer = async () => {
+        if (amount > balance) {
+            alert('Insufficient balance');
+            return;
+        }
         setLoading(true);
         try {
             await axios.post("http://localhost:3000/api/v1/account/transfer", {

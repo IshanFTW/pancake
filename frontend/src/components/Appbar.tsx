@@ -43,7 +43,7 @@ export const Appbar = () => {
             </div>
             <button 
                     onClick={handleLogout} 
-                    className="text-white bg-green-400 hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2.5">
+                    className="text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2.5">
                     Log Out
                 </button>
         </div>
