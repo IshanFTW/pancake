@@ -14,9 +14,9 @@ const Signin = () => {
 
     const handleSignin = async () => {
         try{
-            console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
+            console.log("Backend URL:", import.meta.env.REACT_APP_BACKEND_URL);
 
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/user/signin`,{
+            const response = await axios.post(`${import.meta.env.REACT_APP_BACKEND_URL}/api/v1/user/signin`,{
                 username,
                 password
             })

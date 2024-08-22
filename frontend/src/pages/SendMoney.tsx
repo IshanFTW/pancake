@@ -15,7 +15,7 @@ const SendMoney = () => {
     useEffect(() => {
         const fetchBalance = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/account/balance`, {
+                const response = await axios.get(`${import.meta.env.REACT_APP_BACKEND_URL}/api/v1/account/balance`, {
                     headers: {
                         Authorization: "Bearer " + localStorage.getItem("token")
                     }
@@ -40,7 +40,7 @@ const SendMoney = () => {
         }
         setLoading(true);
         try {
-            await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/v1/account/transfer`, {
+            await axios.post(`${import.meta.env.REACT_APP_BACKEND_URL}/api/v1/account/transfer`, {
                 to: id,
                 amount
             }, {

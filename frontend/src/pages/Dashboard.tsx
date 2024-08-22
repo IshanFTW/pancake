@@ -11,7 +11,7 @@ const Dashboard = () => {
         const fetchBalance = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/v1/account/balance`, {
+                const response = await axios.get(`${import.meta.env.REACT_APP_BACKEND_URL}/api/v1/account/balance`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
