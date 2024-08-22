@@ -60,6 +60,10 @@ userRouter.post('/signup', async(req: Request, res: Response) => {
 
     const userId = user._id;
 
+    const token = jwt.sign({
+        userId
+    }, process.env.JWT_SECRET as string)
+
     await Account.create({
         userId,
         balance: 1 + Math.random() * 10000
@@ -67,6 +71,7 @@ userRouter.post('/signup', async(req: Request, res: Response) => {
 
     res.status(201).json({
         message: "User created successfully",
+        token,
         userId,
     })
 
@@ -152,6 +157,26 @@ userRouter.get("/bulk", async (req: UserQueryParams, res: Response) => {
         res.status(500).json({
             message: 'Internal Server Error',
         });
+    }
+});
+
+userRouter.get('/profile', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const userId = req.userId;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching profile', error });
     }
 });
 
