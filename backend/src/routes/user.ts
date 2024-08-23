@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { Account, User } from '../models/db';
 import jwt from 'jsonwebtoken'
 import authMiddleware from './middleware';
+import bcrypt from 'bcrypt';
 
 const userRouter = Router();
 
@@ -51,9 +52,11 @@ userRouter.post('/signup', async(req: Request, res: Response) => {
         })
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({
         username,
-        password,
+        password: hashedPassword,
         firstName,
         lastName,
     })
@@ -90,14 +93,21 @@ userRouter.post('/signin', async (req: Request, res: Response)=> {
     const { username, password } = parseResult.data;
 
     const user = await User.findOne({
-        username,
-        password
+        username
     })
     if(!user){
         return res.status(401).json({
             message: "Invalid username or password"
         });
     }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if(!isPasswordValid){
+        return res.status(401).json({
+            message: "Invalid username or password"
+        });
+    }
+
     const token = jwt.sign({
         userId: user._id
     }, process.env.JWT_SECRET as string)
@@ -119,6 +129,9 @@ userRouter.put('/', authMiddleware, async (req: AuthenticatedRequest, res) => {
     })
 }
     const updateData = parseResult.data;
+    if (updateData.password) {
+        updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
     await User.updateOne({ _id: req.userId }, { $set: updateData });
 
     res.json({
