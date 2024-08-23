@@ -36,7 +36,7 @@ accountRouter.post('/transfer', authMiddleware, async (req: AuthenticatedRequest
     try{
         const {amount, to} = req.body;
 
-        if (amount <= 0) {
+        if (!Number.isFinite(amount) || amount <= 0) {
             await session.abortTransaction();
             return res.status(400).json({
                 message: "Transfer amount must be a positive number",
@@ -70,7 +70,6 @@ accountRouter.post('/transfer', authMiddleware, async (req: AuthenticatedRequest
         await session.abortTransaction();
         res.status(401).json({
             message: "error while transaction",
-            error: error.message
         })
     }finally {
         session.endSession();
