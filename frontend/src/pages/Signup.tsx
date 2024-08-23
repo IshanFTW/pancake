@@ -31,7 +31,8 @@ const Signup = () => {
                 console.error("Token not returned in response.");
             }
         } catch (error) {
-            console.error("Signup failed:", error);
+            const errorMessage = (error as Error).message;
+            console.error(errorMessage);
         }
     };
 
